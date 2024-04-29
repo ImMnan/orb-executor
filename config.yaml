@@ -1,0 +1,22 @@
+execution:
+- executor: orca
+  scenario: backendLoad
+  concurrency: 30
+  hold-for: 15m
+  ramp-up: 5m
+  locations:
+    us-east-1: 1
+    us-west-1: 1
+  locations-weighted: false
+  provisioning: cloud
+
+- executor: orca
+  scenario: frontend
+  concurrency: 50
+  hold-for: 5m
+  ramp-up: 2m
+  locations:
+    us-east-1: 1
+    us-west-1: 1
+  locations-weighted: true
+  provisioning: cloud
