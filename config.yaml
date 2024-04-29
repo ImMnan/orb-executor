@@ -20,3 +20,52 @@ execution:
     us-west-1: 1
   locations-weighted: true
   provisioning: cloud
+
+# Visit : https://gettaurus.org/docs/JMeter/
+
+scenarios:
+  backendLoad:
+    requests:    
+    - url: https://blazedemo.com/  # url to hit
+      method: GET  # request method (GET, POST, PUT, DELETE)
+      label: homepage  # sampler label
+
+      body: 'request-body-string'  # if present, will be used as body
+      body-file: path/to/file.txt  # this file contents will be used as post body
+
+      upload-files:  # attach files to form (and enable multipart/form-data)
+      - param: summaryReport  # form parameter name
+        path: report.pdf  # path to file
+        mime-type: application/pdf  # optional, Taurus will attempt to guess it automatically
+
+      headers:  # local headers that override global
+        Authentication: Token1234567890
+        Referer: http://taurus.blazemeter/docs
+      think-time: 1s  # local think-time, overrides global
+      timeout: 1s  # local timeout, overrides global
+      content-encoding: utf-8  # content encoding (at JMeter's level), unset by default
+      follow-redirects: true  # follow HTTP redirects
+      random-source-ip: false  # use one of host IPs to send the request (chosen randomly).
+
+#Assertions: 
+      assert:
+       - contains:  # list of strings to check
+         - .+App.+
+         subject: body  # subject for search
+      assert-jsonpath:  # contains list of options
+        - "$."  # if this JSONPath not found, assert will fail
+        - "$.result[0]" # there can be multiple JSONPaths provided
+        - jsonpath: "$." # path to value, validation fails if path not exists
+          validate: true # validate against expected value
+          expected-value: "value" # the value we are expecting to validate, default: false              
+      assert-xpath:
+      - xpath: "/html/head/title/text()='My title'" # query that compares XPath query result with some value  
+
+
+#Extractors are the objects that attached to request to take a piece of the response and use it in following requests. The concept is based on JMeter's extractors. 
+#The following types of extractors are supported:
+#by JSONPath expression
+#by XPath query
+      extract-jsonpath: {}
+      extract-xpath:  
+  
