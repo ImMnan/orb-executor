@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 Manan immnan333@gmail.com
+Copyright © 2024 Manan Patel immnan333@gmail.com
 */
 package cmd
 
@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/immnan/orca/cmd/run"
 	"github.com/spf13/cobra"
 )
 
@@ -59,6 +60,10 @@ func Execute() {
 	}
 }
 
+func addSubCommand() {
+	rootCmd.AddCommand(run.RunCmd)
+}
+
 func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -71,4 +76,5 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.Flags().BoolP("version", "v", false, "Version of the installed bmgo!")
 	rootCmd.Flags().BoolP("license", "l", false, "Show license details")
+	addSubCommand()
 }
