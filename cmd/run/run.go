@@ -17,7 +17,7 @@ var RunCmd = &cobra.Command{
 		fmt.Println("Running a test")
 		fileName, err := cmd.Flags().GetString("filename")
 		if err != nil {
-			log.Fatalf("Error reading config file: %v", err)
+			log.Fatalf("Error declaring config file/path: %v", err)
 		}
 		testRun(fileName)
 	},
@@ -129,11 +129,16 @@ func testRun(fileName string) {
 			fmt.Printf("Body: %s\n", request.Body)
 			fmt.Printf("Body File: %s\n", request.BodyFile)
 			fmt.Printf("Upload Files: %+v\n", request.UploadFiles)
-			fmt.Printf("Headers: %+v\n", request.Headers)
-			for k, v := range request.Headers {
-				fmt.Printf("HName: %s\n", k)
-				fmt.Printf("HValue: %s\n", v)
+			//fmt.Printf("Headers: %+v\n", request.Headers)
+			var val []string
+			for k := range request.Headers {
+				val = append(val, k)
 			}
+			for _, q := range val {
+				fmt.Printf("Header: %s\n", q)
+				fmt.Printf("Value: %s\n", request.Headers[q])
+			}
+
 			fmt.Printf("Think Time: %s\n", request.ThinkTime)
 			fmt.Printf("Timeout: %s\n", request.Timeout)
 			fmt.Printf("Content Encoding: %s\n", request.ContentEncoding)
