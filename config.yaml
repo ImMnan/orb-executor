@@ -1,9 +1,9 @@
 execution:
 - scenario: backendLoad
   executor: orca
-  concurrency: 30
-  hold-for: 15m
-  ramp-up: 5m
+  concurrency: 5
+  holdfor: 10
+  rampup: 2
   locations:
     us-east-1: 1
     us-west-1: 1
@@ -13,8 +13,8 @@ execution:
 - scenario: frontend
   executor: selenium
   concurrency: 5
-  hold-for: 5m
-  ramp-up: 2m
+  holdfor: 10
+  rampup: 2
   locations:
     us-east-1: 1
     us-west-1: 1
