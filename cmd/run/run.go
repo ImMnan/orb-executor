@@ -19,8 +19,17 @@ var RunCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Error declaring config file/path: %v", err)
 		}
-		rest(fileName)
+		//run, err := cmd.Flags().GetBool("run")
+		if err != nil {
+			log.Fatalf("Error with the flag: %v", err)
+		}
+		testRun(fileName)
 	},
+}
+
+func init() {
+	RunCmd.Flags().StringP("filename", "f", "", "Enter the file name or complete filepath")
+	RunCmd.Flags().BoolP("run", "r", false, "testing")
 }
 
 // Define the structs
@@ -29,16 +38,12 @@ type ExecutionConfig struct {
 	Scenarios map[string]Scenario `yaml:"scenarios"`
 }
 
-func init() {
-	RunCmd.Flags().StringP("filename", "f", "", "Enter the file name or complete filepath")
-}
-
 type Execution struct {
 	Scenario          string         `yaml:"scenario"`
 	Executor          string         `yaml:"executor"`
 	Concurrency       int            `yaml:"concurrency"`
-	HoldFor           string         `yaml:"hold-for"`
-	RampUp            string         `yaml:"ramp-up"`
+	HoldFor           int            `yaml:"holdfor"`
+	RampUp            int            `yaml:"rampup"`
 	Locations         map[string]int `yaml:"locations"`
 	LocationsWeighted bool           `yaml:"locations-weighted"`
 	Provisioning      string         `yaml:"provisioning"`
@@ -109,18 +114,6 @@ func LoadConfig(filename string) (ExecutionConfig, error) {
 	return config, nil
 }
 
-// Example method to print scenario names
-func (c *ExecutionConfig) PrintScenarioNames() {
-	fmt.Println("Scenarios:")
-	for name, scenario := range c.Scenarios {
-		fmt.Println("Scenario:", name)
-		fmt.Println("Requests:")
-		for _, request := range scenario.Requests {
-			fmt.Println(" - ", request.Label)
-		}
-	}
-}
-
 // GetRequestsForScenario returns the requests associated with the given scenario name
 func (c *ExecutionConfig) GetRequestsForScenario(name string) ([]Request, bool) {
 	scenario, ok := c.Scenarios[name]
@@ -138,30 +131,30 @@ func (c *ExecutionConfig) GetScenarios() []string {
 	return scenarioNames
 }
 
-func rest(fileName string) {
-	config, err := LoadConfig(fileName)
-	if err != nil {
-		fmt.Printf("Error loading config: %v\n", err)
-		return
+func (c *ExecutionConfig) GetExecutions() {
+	for i := range c.Execution {
+		fmt.Println("Execution: \n", i, c.Execution[i])
 	}
-	fmt.Println("This is from config methods")
-	// Inspect parsed config
-	//	fmt.Printf("%+v\n", config)
-	// Use custom methods
-	config.PrintScenarioNames()
+}
 
-	//fmt.Println("This is scenario1", config.Execution[0].Scenario)
-	scenarioNames := config.GetScenarios()
-	// Get requests for scenario
-	for _, name := range scenarioNames {
-		requests, ok := config.GetRequestsForScenario(name)
-		if !ok {
-			fmt.Println("Scenario not found")
-		} else {
-			fmt.Printf("\nRequests for %s scenario:\n", name)
-			for _, request := range requests {
-				fmt.Printf("Request: %+v\n", request)
-			}
-		}
+func (e *Execution) GetConcurrency() int {
+	return e.Concurrency
+}
+
+func (e *Execution) GetHoldFor() int {
+	return e.HoldFor
+}
+
+func (e *Execution) GetRampUp() (rampUp int, increment []int, err error) {
+	rampUp = e.RampUp
+	vu := e.Concurrency
+	step := vu / rampUp
+	if step < 1 {
+		err = fmt.Errorf("rampup value is too high, please set a value less than or equal to the concurrency value")
+		return rampUp, nil, err
 	}
+	for i := 0; i < rampUp; i++ {
+		increment = append(increment, (i+1)*step)
+	}
+	return rampUp, increment, nil
 }
