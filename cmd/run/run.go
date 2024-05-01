@@ -19,7 +19,7 @@ var RunCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Error declaring config file/path: %v", err)
 		}
-		testRun(fileName)
+		rest(fileName)
 	},
 }
 
@@ -94,68 +94,74 @@ type ExtractJsonPath struct {
 type ExtractXPath struct {
 }
 
-func (req *Request) url() string {
-	return req.URL
+func LoadConfig(filename string) (ExecutionConfig, error) {
+	var config ExecutionConfig
+	viper.SetConfigFile(filename)
+	err := viper.ReadInConfig()
+	if err != nil {
+		return config, err
+	}
+
+	err = viper.Unmarshal(&config)
+	if err != nil {
+		return config, err
+	}
+	return config, nil
 }
 
-func testRun(fileName string) {
-	// Set up Viper
-	viper.SetConfigFile(fileName)
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error reading config file: %v", err)
-	}
-
-	// Unmarshal YAML into struct
-	var config ExecutionConfig
-	if err := viper.Unmarshal(&config); err != nil {
-		log.Fatalf("Error unmarshaling config: %v", err)
-	}
-	fmt.Printf("Config: %v\n", req.url())
-	// Access data from the unmarshaled struct
-	for _, execution := range config.Execution {
-		fmt.Printf("Scenario: %s\n", execution.Scenario)
-		fmt.Printf("Executor: %s\n", execution.Executor)
-		fmt.Printf("Concurrency: %d\n", execution.Concurrency)
-		fmt.Printf("Hold For: %s\n", execution.HoldFor)
-		fmt.Printf("Ramp Up: %s\n", execution.RampUp)
-		fmt.Printf("Locations: %+v\n", execution.Locations)
-		fmt.Printf("Locations Weighted: %t\n", execution.LocationsWeighted)
-		fmt.Printf("Provisioning: %s\n", execution.Provisioning)
-		fmt.Println()
-	}
-	// Access scenario requests
-	for scenarioName, scenario := range config.Scenarios {
-		fmt.Printf("Scenario Name: %s\n", scenarioName)
+// Example method to print scenario names
+func (c *ExecutionConfig) PrintScenarioNames() {
+	fmt.Println("Scenarios:")
+	for name, scenario := range c.Scenarios {
+		fmt.Println("Scenario:", name)
+		fmt.Println("Requests:")
 		for _, request := range scenario.Requests {
-			fmt.Printf("URL: %s\n", request.URL)
-			fmt.Printf("Method: %s\n", request.Method)
-			fmt.Printf("Label: %s\n", request.Label)
-			fmt.Printf("Body: %s\n", request.Body)
-			fmt.Printf("Body File: %s\n", request.BodyFile)
-			fmt.Printf("Upload Files: %+v\n", request.UploadFiles)
-			//fmt.Printf("Headers: %+v\n", request.Headers)
-			var val []string
-			for k := range request.Headers {
-				val = append(val, k)
-			}
-			for _, q := range val {
-				fmt.Printf("Header: %s\n", q)
-				fmt.Printf("Value: %s\n", request.Headers[q])
-			}
-			fmt.Printf("Think Time: %s\n", request.ThinkTime)
-			fmt.Printf("Timeout: %s\n", request.Timeout)
-			fmt.Printf("Content Encoding: %s\n", request.ContentEncoding)
-			fmt.Printf("Follow Redirects: %t\n", request.FollowRedirects)
-			fmt.Printf("Random Source IP: %t\n", request.RandomSourceIP)
-			fmt.Printf("Assert: %+v\n", request.Assert)
-			fmt.Printf("Assert JsonPath: %+v\n", request.AssertJsonPath)
-			fmt.Printf("Assert XPath: %+v\n", request.AssertXPath)
-			fmt.Printf("Extract JsonPath: %+v\n", request.ExtractJsonPath)
-			fmt.Printf("Extract XPath: %+v\n", request.ExtractXPath)
-			fmt.Println()
-
+			fmt.Println(" - ", request.Label)
 		}
 	}
-	fmt.Println("timeStamp,elapsed,label,responseCode,responseMessage,threadName,success,bytes,grpThreads,allThreads,Latency,Hostname,Connect")
-	//executionGet()
+}
+
+// GetRequestsForScenario returns the requests associated with the given scenario name
+func (c *ExecutionConfig) GetRequestsForScenario(name string) ([]Request, bool) {
+	scenario, ok := c.Scenarios[name]
+	if !ok {
+		return nil, false
+	}
+	return scenario.Requests, true
+}
+
+func (c *ExecutionConfig) GetScenarios() []string {
+	var scenarioNames []string
+	for name := range c.Scenarios {
+		scenarioNames = append(scenarioNames, name)
+	}
+	return scenarioNames
+}
+
+func rest(fileName string) {
+	config, err := LoadConfig(fileName)
+	if err != nil {
+		fmt.Printf("Error loading config: %v\n", err)
+		return
+	}
+	fmt.Println("This is from config methods")
+	// Inspect parsed config
+	//	fmt.Printf("%+v\n", config)
+	// Use custom methods
+	config.PrintScenarioNames()
+
+	//fmt.Println("This is scenario1", config.Execution[0].Scenario)
+	scenarioNames := config.GetScenarios()
+	// Get requests for scenario
+	for _, name := range scenarioNames {
+		requests, ok := config.GetRequestsForScenario(name)
+		if !ok {
+			fmt.Println("Scenario not found")
+		} else {
+			fmt.Printf("\nRequests for %s scenario:\n", name)
+			for _, request := range requests {
+				fmt.Printf("Request: %+v\n", request)
+			}
+		}
+	}
 }

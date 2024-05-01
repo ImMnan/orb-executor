@@ -89,3 +89,9 @@ scenarios:
         Authentication: Token1234567890
       think-time: 1s  # local think-time, overrides global
       timeout: 3s  # local timeout, overrides global
+
+  frontend:
+    requests:    
+    - url: https://demoblaze.com/  # url to hit
+      method: GET  # request method (GET, POST, PUT, DELETE)
+      label: homepage  # sampler label
