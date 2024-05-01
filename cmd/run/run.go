@@ -32,6 +32,9 @@ func init() {
 	RunCmd.Flags().BoolP("run", "r", false, "testing")
 }
 
+var Config ExecutionConfig
+var err error
+
 // Define the structs
 type ExecutionConfig struct {
 	Execution []Execution         `yaml:"execution"`
@@ -100,18 +103,17 @@ type ExtractXPath struct {
 }
 
 func LoadConfig(filename string) (ExecutionConfig, error) {
-	var config ExecutionConfig
 	viper.SetConfigFile(filename)
 	err := viper.ReadInConfig()
 	if err != nil {
-		return config, err
+		return Config, err
 	}
 
-	err = viper.Unmarshal(&config)
+	err = viper.Unmarshal(&Config)
 	if err != nil {
-		return config, err
+		return Config, err
 	}
-	return config, nil
+	return Config, nil
 }
 
 // GetRequestsForScenario returns the requests associated with the given scenario name
