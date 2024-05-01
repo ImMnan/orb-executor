@@ -11,8 +11,8 @@ execution:
   provisioning: cloud
 
 - scenario: frontend
-  executor: orca
-  concurrency: 50
+  executor: selenium
+  concurrency: 5
   hold-for: 5m
   ramp-up: 2m
   locations:
@@ -26,7 +26,7 @@ execution:
 scenarios:
   backendLoad:
     requests:    
-    - url: https://blazedemo.com/  # url to hit
+    - url: https://demoblaze.com/  # url to hit
       method: GET  # request method (GET, POST, PUT, DELETE)
       label: homepage  # sampler label
 
@@ -62,7 +62,9 @@ scenarios:
       assert-xpath:
       - xpath: "/html/head/title/text()='My title'" # query that compares XPath query result with some value  
 
-
+    - url: https://demoblaze.com/aboutus  # url to hit
+      method: GET  # request method (GET, POST, PUT, DELETE)
+      label: aboutUs  # sampler label
 #Extractors are the objects that attached to request to take a piece of the response and use it in following requests. The concept is based on JMeter's extractors. 
 #The following types of extractors are supported:
 #by JSONPath expression
@@ -71,7 +73,7 @@ scenarios:
       extract-xpath:  
 
 # This is another testing endpoint, will be executed sequencially after the one above is finished
-    - url: https://blazedemo.com/cart  # url to hit
+    - url: https://demoblaze.com/cart.html  # url to hit
       method: GET  # request method (GET, POST, PUT, DELETE)
       label: cart  # sampler label
 
