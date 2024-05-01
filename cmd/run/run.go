@@ -94,6 +94,10 @@ type ExtractJsonPath struct {
 type ExtractXPath struct {
 }
 
+func (req *Request) url() string {
+	return req.URL
+}
+
 func testRun(fileName string) {
 	// Set up Viper
 	viper.SetConfigFile(fileName)
@@ -106,7 +110,7 @@ func testRun(fileName string) {
 	if err := viper.Unmarshal(&config); err != nil {
 		log.Fatalf("Error unmarshaling config: %v", err)
 	}
-
+	fmt.Printf("Config: %v\n", req.url())
 	// Access data from the unmarshaled struct
 	for _, execution := range config.Execution {
 		fmt.Printf("Scenario: %s\n", execution.Scenario)
@@ -138,7 +142,6 @@ func testRun(fileName string) {
 				fmt.Printf("Header: %s\n", q)
 				fmt.Printf("Value: %s\n", request.Headers[q])
 			}
-
 			fmt.Printf("Think Time: %s\n", request.ThinkTime)
 			fmt.Printf("Timeout: %s\n", request.Timeout)
 			fmt.Printf("Content Encoding: %s\n", request.ContentEncoding)
@@ -150,6 +153,9 @@ func testRun(fileName string) {
 			fmt.Printf("Extract JsonPath: %+v\n", request.ExtractJsonPath)
 			fmt.Printf("Extract XPath: %+v\n", request.ExtractXPath)
 			fmt.Println()
+
 		}
 	}
+	fmt.Println("timeStamp,elapsed,label,responseCode,responseMessage,threadName,success,bytes,grpThreads,allThreads,Latency,Hostname,Connect")
+	//executionGet()
 }
