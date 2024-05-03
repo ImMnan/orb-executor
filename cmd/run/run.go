@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var Config ExecutionConfig
+
 var RunCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run a test",
@@ -20,10 +22,15 @@ var RunCmd = &cobra.Command{
 			log.Fatalf("Error declaring config file/path: %v", err)
 		}
 		//run, err := cmd.Flags().GetBool("run")
+		//if err != nil {
+		//	log.Fatalf("Error with the flag: %v", err)
+		//}
+		Config, err = LoadConfig(fileName)
 		if err != nil {
-			log.Fatalf("Error with the flag: %v", err)
+			log.Fatalf("Error parsing/unmarshalling the config file: %v", err)
 		}
-		testRun(fileName)
+		getRequest()
+		testRun(Config)
 	},
 }
 
@@ -32,13 +39,10 @@ func init() {
 	RunCmd.Flags().BoolP("run", "r", false, "testing")
 }
 
-var Config ExecutionConfig
-var err error
-
 // Define the structs
 type ExecutionConfig struct {
-	Execution []Execution         `yaml:"execution"`
-	Scenarios map[string]Scenario `yaml:"scenarios"`
+	Execution []Execution          `yaml:"execution"`
+	Scenarios map[string]Scenarios `yaml:"scenarios"`
 }
 
 type Execution struct {
@@ -52,7 +56,7 @@ type Execution struct {
 	Provisioning      string         `yaml:"provisioning"`
 }
 
-type Scenario struct {
+type Scenarios struct {
 	Requests []Request `yaml:"requests"`
 }
 
@@ -133,18 +137,8 @@ func (c *ExecutionConfig) GetScenarios() []string {
 	return scenarioNames
 }
 
-func (c *ExecutionConfig) GetExecutions() {
-	for i := range c.Execution {
-		fmt.Println("Execution: \n", i, c.Execution[i])
-	}
-}
-
-func (e *Execution) GetConcurrency() int {
-	return e.Concurrency
-}
-
-func (e *Execution) GetHoldFor() int {
-	return e.HoldFor
+func (e *Execution) GetExecutionDetails() (vu, holdFor int, scenario, provisioning string) {
+	return e.Concurrency, e.HoldFor, e.Scenario, e.Provisioning
 }
 
 func (e *Execution) GetRampUp() (rampUp int, increment []int, err error) {
