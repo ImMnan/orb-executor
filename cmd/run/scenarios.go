@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// This GO file is how scenarios are managed.
 func testRun(Config ExecutionConfig) {
 	var wgExecutor sync.WaitGroup
 	for i := 0; i < len(Config.Execution); i++ {
@@ -33,25 +34,25 @@ func concurrentHoldForRamp(wgExecutor *sync.WaitGroup, executionItem int) {
 	go func() {
 		// Execute the function
 		start := time.Now()
-		//fmt.Println("This is the increment slice", steps)
 		for _, vu := range steps {
 			// The first one is for the rampUp
 			wgRu.Add(1)
+			//	fmt.Println("This is rampup")
 			go concurrentVuRamp(&wgRu, vu, executionItem)
+			wgRu.Wait()
 			if time.Since(start) >= time.Duration(rampUp)*time.Second {
 				break
 			}
-			wgRu.Wait()
 		}
 		for {
 			// Once Rampup complete, the main loop will start
+			//	fmt.Println("This is hold for")
 			wgHu.Add(1)
 			go concurrentVu(&wgHu, executionItem)
-			fmt.Println("\n-")
+			wgHu.Wait()
 			if time.Since(start) >= time.Duration(holdFor)*time.Second {
 				break
 			}
-			wgHu.Wait()
 		}
 		// Signal that the goroutine has finished
 		done <- true
@@ -64,13 +65,9 @@ func concurrentHoldForRamp(wgExecutor *sync.WaitGroup, executionItem int) {
 }
 
 func concurrentVuRamp(wgRu *sync.WaitGroup, vu, executionItem int) {
-	// Dummy implementation of GetLoadConfig() for this example
 	start := time.Now()
-	scenario := Config.Execution[executionItem].Scenario
 	for {
-		timePost := time.Now()
-		timeString := timePost.Format("2006-01-02 15:04:05")
-		fmt.Printf("%v Concurrency %v Status 200, success!, scenario: %s\n", timeString, vu, scenario)
+		getRequest(executionItem, vu)
 		time.Sleep(100 * time.Millisecond)
 		if time.Since(start) >= time.Duration(1)*time.Second {
 			break
@@ -82,16 +79,10 @@ func concurrentVuRamp(wgRu *sync.WaitGroup, vu, executionItem int) {
 func concurrentVu(wgHu *sync.WaitGroup, executionItem int) {
 	// Dummy implementation of GetLoadConfig() for this example
 	vu := Config.Execution[executionItem].Concurrency
-	scenario := Config.Execution[executionItem].Scenario
+	//fmt.Println("This is the concurrnecy executing!")
 	for i := 0; i < vu; i++ {
-		timePost := time.Now()
-		timeString := timePost.Format("2006-01-02 15:04:05")
-		fmt.Printf("%v Concurrency %v Status 200, success!, scenario: %s\n", timeString, vu, scenario)
+		getRequest(executionItem, vu)
 		time.Sleep(100 * time.Millisecond)
 	}
 	wgHu.Done()
-}
-
-func getRequest() {
-	fmt.Println(Config.Execution[0].Scenario)
 }
