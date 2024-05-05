@@ -66,10 +66,11 @@ func concurrentHoldForRamp(wgExecutor *sync.WaitGroup, executionItem int) {
 func concurrentVuRamp(wgRu *sync.WaitGroup, vu, executionItem int) {
 	// Dummy implementation of GetLoadConfig() for this example
 	start := time.Now()
+	scenario := Config.Execution[executionItem].Scenario
 	for {
 		timePost := time.Now()
 		timeString := timePost.Format("2006-01-02 15:04:05")
-		fmt.Printf("%v Concurrency %v Status 200, success!, scenario: %d\n", timeString, vu, executionItem)
+		fmt.Printf("%v Concurrency %v Status 200, success!, scenario: %s\n", timeString, vu, scenario)
 		time.Sleep(100 * time.Millisecond)
 		if time.Since(start) >= time.Duration(1)*time.Second {
 			break
@@ -81,10 +82,11 @@ func concurrentVuRamp(wgRu *sync.WaitGroup, vu, executionItem int) {
 func concurrentVu(wgHu *sync.WaitGroup, executionItem int) {
 	// Dummy implementation of GetLoadConfig() for this example
 	vu := Config.Execution[executionItem].Concurrency
+	scenario := Config.Execution[executionItem].Scenario
 	for i := 0; i < vu; i++ {
 		timePost := time.Now()
 		timeString := timePost.Format("2006-01-02 15:04:05")
-		fmt.Printf("%v Concurrency %v Status 200, success!, scenario: %d\n", timeString, vu, executionItem)
+		fmt.Printf("%v Concurrency %v Status 200, success!, scenario: %s\n", timeString, vu, scenario)
 		time.Sleep(100 * time.Millisecond)
 	}
 	wgHu.Done()

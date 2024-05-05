@@ -21,10 +21,6 @@ var RunCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Error declaring config file/path: %v", err)
 		}
-		//run, err := cmd.Flags().GetBool("run")
-		//if err != nil {
-		//	log.Fatalf("Error with the flag: %v", err)
-		//}
 		Config, err = LoadConfig(fileName)
 		if err != nil {
 			log.Fatalf("Error parsing/unmarshalling the config file: %v", err)
