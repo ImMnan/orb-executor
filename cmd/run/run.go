@@ -16,7 +16,6 @@ var RunCmd = &cobra.Command{
 	Long:  ``,
 	// Uncomment the following line if your bare application
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Running a test")
 		fileName, err := cmd.Flags().GetString("filename")
 		if err != nil {
 			log.Fatalf("Error declaring config file/path: %v", err)
@@ -25,7 +24,6 @@ var RunCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Error parsing/unmarshalling the config file: %v", err)
 		}
-		getRequest()
 		testRun(Config)
 	},
 }
@@ -140,6 +138,9 @@ func (e *Execution) GetExecutionDetails() (vu, holdFor int, scenario, provisioni
 func (e *Execution) GetRampUp() (rampUp int, increment []int, err error) {
 	rampUp = e.RampUp
 	vu := e.Concurrency
+	if rampUp < 1 {
+		return 0, nil, nil
+	}
 	step := vu / rampUp
 	if step < 1 {
 		err = fmt.Errorf("rampup value is too high, please set a value less than or equal to the concurrency value")
