@@ -2,6 +2,7 @@ package run
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptrace"
@@ -54,6 +55,12 @@ func getRequestCmd(url string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	bodyText, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s\n", bodyText)
+
 	timeEnd := time.Now()
 	defer resp.Body.Close()
 
@@ -70,38 +77,39 @@ func getRequest(executionItem, vu int) {
 	scenarioName := Config.Execution[executionItem].Scenario
 	//fmt.Println("Scenario: ", scenarioName)
 	for i := 0; i < len(Config.Scenarios[scenarioName].Requests); i++ {
+		timeStart := time.Now()
 		requestItem := Config.Scenarios[scenarioName].Requests
 		client := &http.Client{}
 		url := requestItem[i].URL
-		fmt.Printf("Hitting %s\n", url)
+		//	fmt.Printf("Hitting %s\n", url)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			log.Fatal(err)
 		}
+		var dnsStart, dnsDone, connectStart, connectDone, gotFirstResponseByte time.Time
+
 		trace := &httptrace.ClientTrace{
-			DNSDone: func(dnsInfo httptrace.DNSDoneInfo) {
-				fmt.Printf("DNS Info: %+v\n", dnsInfo)
-			},
-			GotConn: func(connInfo httptrace.GotConnInfo) {
-				fmt.Printf("Got Conn: %+v\n", connInfo)
-			},
+			DNSStart: func(_ httptrace.DNSStartInfo) { dnsStart = time.Now() },
+			DNSDone:  func(_ httptrace.DNSDoneInfo) { dnsDone = time.Now() },
+
+			ConnectStart:         func(_, _ string) { connectStart = time.Now() },
+			ConnectDone:          func(_, _ string, _ error) { connectDone = time.Now() },
+			GotFirstResponseByte: func() { gotFirstResponseByte = time.Now() },
 		}
 		req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-		if _, err := http.DefaultTransport.RoundTrip(req); err != nil {
-			log.Fatal(err)
-		}
 		resp, err := client.Do(req)
 		if err != nil {
 			log.Fatal(err)
 		}
+		timeEnd := time.Now()
 		defer resp.Body.Close()
-		//bodyText, err := io.ReadAll(resp.Body)
-		//if err != nil {
-		//	log.Fatal(err)
-		//}
-		//fmt.Printf("%s\n", bodyText)
-		timePost := time.Now()
-		timeString := timePost.Format("2006-01-02 15:04:05")
-		fmt.Printf("%v Concurrency %v Status %v, scenario: %s\n", timeString, vu, resp.Status, scenarioName)
+
+		dnsTime := dnsDone.Sub(dnsStart)
+		connectTime := connectDone.Sub(connectStart)
+		responseTime := gotFirstResponseByte.Sub(timeStart)
+		latency := timeEnd.Sub(timeStart) - responseTime
+		timeString := timeStart.Format("2006-01-02 15:04:05")
+		fmt.Printf("%v, Concurrency %v, Status %v, DNS: %v, ConnectTime: %v, ResponseTime: %v, Latency: %v\n",
+			timeString, vu, resp.Status, dnsTime, connectTime, responseTime, latency)
 	}
 }

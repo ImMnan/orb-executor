@@ -1,32 +1,32 @@
 execution:
-- scenario: backendLoad
+- scenario: backendload
   executor: orca
-  concurrency: 5
-  holdfor: 10
-  rampup: 2
+  concurrency: 2
+  holdfor: 1
+  rampup: 0
   locations:
     us-east-1: 1
     us-west-1: 1
   locations-weighted: false
   provisioning: cloud
 
-- scenario: frontend
-  executor: selenium
-  concurrency: 5
-  holdfor: 10
-  rampup: 2
-  locations:
-    us-east-1: 1
-    us-west-1: 1
-  locations-weighted: true
-  provisioning: cloud
+#- scenario: frontend
+#  executor: selenium
+#  concurrency: 5
+#  holdfor: 10
+#  rampup: 2
+#  locations:
+#    us-east-1: 1
+#    us-west-1: 1
+#  locations-weighted: true
+#  provisioning: cloud
 
 # Visit : https://gettaurus.org/docs/JMeter/
 
 scenarios:
-  backendLoad:
+  backendload:
     requests:    
-    - url: https://demoblaze.com/  # url to hit
+    - url: https://reqres.in/api/users?page=1  # url to hit
       method: GET  # request method (GET, POST, PUT, DELETE)
       label: homepage  # sampler label
 
@@ -62,7 +62,7 @@ scenarios:
       assert-xpath:
       - xpath: "/html/head/title/text()='My title'" # query that compares XPath query result with some value  
 
-    - url: https://demoblaze.com/aboutus  # url to hit
+    - url: https://reqres.in/api/users?page=2  # url to hit
       method: GET  # request method (GET, POST, PUT, DELETE)
       label: aboutUs  # sampler label
 #Extractors are the objects that attached to request to take a piece of the response and use it in following requests. The concept is based on JMeter's extractors. 
