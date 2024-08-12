@@ -50,6 +50,7 @@ func concurrentHoldForRamp(wgExecutor *sync.WaitGroup, executionItem int) {
 			wgHu.Add(1)
 			go concurrentVu(&wgHu, executionItem)
 			wgHu.Wait()
+			fmt.Println("1 Loop completed")
 			if time.Since(start) >= time.Duration(holdFor)*time.Second {
 				break
 			}

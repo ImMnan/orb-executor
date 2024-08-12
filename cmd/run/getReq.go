@@ -103,13 +103,13 @@ func getRequest(executionItem, vu int) {
 		}
 		timeEnd := time.Now()
 		defer resp.Body.Close()
-
+		labelName := requestItem[i].Label
 		dnsTime := dnsDone.Sub(dnsStart)
 		connectTime := connectDone.Sub(connectStart)
 		responseTime := gotFirstResponseByte.Sub(timeStart)
 		latency := timeEnd.Sub(timeStart) - responseTime
 		timeString := timeStart.Format("2006-01-02 15:04:05")
-		fmt.Printf("%v, Concurrency %v, Status %v, DNS: %v, ConnectTime: %v, ResponseTime: %v, Latency: %v\n",
-			timeString, vu, resp.Status, dnsTime, connectTime, responseTime, latency)
+		fmt.Printf("%v, Concurrency %v, Status %v, DNS: %v, ConnectTime: %v, ResponseTime: %v, Latency: %v, Label: %v\n",
+			timeString, vu, resp.Status, dnsTime, connectTime, responseTime, latency, labelName)
 	}
 }
