@@ -56,11 +56,6 @@ func getRequestCmd(url string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	bodyText, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s\n", bodyText)
 
 	timeEnd := time.Now()
 	defer resp.Body.Close()
@@ -72,6 +67,8 @@ func getRequestCmd(url string) {
 	timeString := timeStart.Format("2006-01-02 15:04:05")
 	fmt.Printf("%v, Concurrency 1, Status %v, DNS: %v, ConnectTime: %v, ResponseTime: %v, Latency: %v\n",
 		timeString, resp.Status, dnsTime, connectTime, responseTime, latency)
+
+	debugReq(resp, req)
 }
 
 func getRequest(executionItem, vu int) {
@@ -94,7 +91,6 @@ func getRequest(executionItem, vu int) {
 		}
 
 		var dnsStart, dnsDone, connectStart, connectDone, gotFirstResponseByte time.Time
-
 		trace := &httptrace.ClientTrace{
 			DNSStart: func(_ httptrace.DNSStartInfo) { dnsStart = time.Now() },
 			DNSDone:  func(_ httptrace.DNSDoneInfo) { dnsDone = time.Now() },
@@ -118,9 +114,11 @@ func getRequest(executionItem, vu int) {
 		timeString := timeStart.Format("2006-01-02 15:04:05")
 		fmt.Printf("%v, Concurrency %v, Status %v, DNS: %v, ConnectTime: %v, ResponseTime: %v, Latency: %v, Label: %v\n",
 			timeString, vu, resp.Status, dnsTime, connectTime, responseTime, latency, labelName)
-	}
-}
 
+		time.Sleep(time.Duration(requestItem[i].ThinkTime) * time.Second)
+	}
+
+}
 func debugReq(resp *http.Response, req *http.Request) {
 	// Debug: Print the request details
 	requestDump, err := httputil.DumpRequestOut(req, true)
@@ -130,7 +128,7 @@ func debugReq(resp *http.Response, req *http.Request) {
 	fmt.Printf("Request Dump:\n%s\n", string(requestDump))
 
 	// Debug: Print the response details
-	fmt.Println("Response Dump:\n")
+	fmt.Println("Response Dump:\n-")
 	bodyText, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
