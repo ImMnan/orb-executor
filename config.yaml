@@ -41,7 +41,7 @@ scenarios:
         Authentication: Token1234567890
         Content-Type: application/json
         Accept: all 
-      think-time: 1s  # local think-time, overrides global
+      think-time: 1  # local think-time, this is int type and defaults to seconds
       timeout: 1s  # local timeout, overrides global
       content-encoding: utf-8  # content encoding (at JMeter's level), unset by default
       follow-redirects: true  # follow HTTP redirects
