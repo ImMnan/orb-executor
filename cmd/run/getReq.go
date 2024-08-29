@@ -77,7 +77,10 @@ func getRequest(executionItem, vu int) {
 	for i := 0; i < len(Config.Scenarios[scenarioName].Requests); i++ {
 		timeStart := time.Now()
 		requestItem := Config.Scenarios[scenarioName].Requests
-		client := &http.Client{}
+		timeout := time.Duration(requestItem[i].Timeout) * time.Millisecond
+		client := &http.Client{
+			Timeout: timeout,
+		}
 		url := requestItem[i].URL
 		//	fmt.Printf("Hitting %s\n", url)
 		req, err := http.NewRequest(requestItem[i].Method, url, nil)
@@ -115,7 +118,7 @@ func getRequest(executionItem, vu int) {
 		fmt.Printf("%v, Concurrency %v, Status %v, DNS: %v, ConnectTime: %v, ResponseTime: %v, Latency: %v, Label: %v\n",
 			timeString, vu, resp.Status, dnsTime, connectTime, responseTime, latency, labelName)
 
-		time.Sleep(time.Duration(requestItem[i].ThinkTime) * time.Second)
+		time.Sleep(time.Duration(requestItem[i].ThinkTime) * time.Millisecond)
 	}
 
 }
