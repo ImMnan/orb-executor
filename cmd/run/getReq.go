@@ -93,13 +93,6 @@ func getRequest(executionItem, vu int) {
 			req.Header.Add(key, value)
 		}
 
-		// Debug: Print the request details
-		requestDump, err := httputil.DumpRequestOut(req, true)
-		if err != nil {
-			log.Fatalf("Error dumping request: %v", err)
-		}
-		fmt.Printf("Request Dump:\n%s\n", string(requestDump))
-
 		var dnsStart, dnsDone, connectStart, connectDone, gotFirstResponseByte time.Time
 
 		trace := &httptrace.ClientTrace{
@@ -126,4 +119,21 @@ func getRequest(executionItem, vu int) {
 		fmt.Printf("%v, Concurrency %v, Status %v, DNS: %v, ConnectTime: %v, ResponseTime: %v, Latency: %v, Label: %v\n",
 			timeString, vu, resp.Status, dnsTime, connectTime, responseTime, latency, labelName)
 	}
+}
+
+func debugReq(resp *http.Response, req *http.Request) {
+	// Debug: Print the request details
+	requestDump, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		log.Fatalf("Error dumping request: %v", err)
+	}
+	fmt.Printf("Request Dump:\n%s\n", string(requestDump))
+
+	// Debug: Print the response details
+	fmt.Println("Response Dump:\n")
+	bodyText, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s\n", bodyText)
 }
