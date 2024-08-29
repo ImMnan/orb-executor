@@ -62,7 +62,7 @@ type Request struct {
 	BodyFile        string              `yaml:"body-file,omitempty"`
 	UploadFiles     []UploadFile        `yaml:"upload-files,omitempty"`
 	Headers         map[string]string   `yaml:"headers,omitempty"`
-	ThinkTime       string              `yaml:"think-time,omitempty"`
+	ThinkTime       int                 `yaml:"think-time,omitempty"`
 	Timeout         string              `yaml:"timeout,omitempty"`
 	ContentEncoding string              `yaml:"content-encoding,omitempty"`
 	FollowRedirects bool                `yaml:"follow-redirects,omitempty"`
