@@ -63,7 +63,7 @@ type Request struct {
 	UploadFiles     []UploadFile        `yaml:"upload-files,omitempty"`
 	Headers         map[string]string   `yaml:"headers,omitempty"`
 	ThinkTime       int                 `yaml:"think-time,omitempty"`
-	Timeout         string              `yaml:"timeout,omitempty"`
+	Timeout         int                 `yaml:"timeout,omitempty"`
 	ContentEncoding string              `yaml:"content-encoding,omitempty"`
 	FollowRedirects bool                `yaml:"follow-redirects,omitempty"`
 	RandomSourceIP  bool                `yaml:"random-source-ip,omitempty"`
