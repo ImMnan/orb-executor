@@ -1,8 +1,8 @@
 execution:
 - scenario: backendload
   executor: orca
-  concurrency: 5
-  holdfor: 5
+  concurrency: 1
+  holdfor: 1
   rampup: 0
   locations:
     us-east-1: 1

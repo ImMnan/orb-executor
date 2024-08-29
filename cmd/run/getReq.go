@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptrace"
+	"net/http/httputil"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -82,10 +83,23 @@ func getRequest(executionItem, vu int) {
 		client := &http.Client{}
 		url := requestItem[i].URL
 		//	fmt.Printf("Hitting %s\n", url)
-		req, err := http.NewRequest("GET", url, nil)
+		req, err := http.NewRequest(requestItem[i].Method, url, nil)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		// Add headers to the request
+		for key, value := range requestItem[i].Headers {
+			req.Header.Add(key, value)
+		}
+
+		// Debug: Print the request details
+		requestDump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			log.Fatalf("Error dumping request: %v", err)
+		}
+		fmt.Printf("Request Dump:\n%s\n", string(requestDump))
+
 		var dnsStart, dnsDone, connectStart, connectDone, gotFirstResponseByte time.Time
 
 		trace := &httptrace.ClientTrace{
