@@ -81,6 +81,7 @@ func getRequest(executionItem, vu int) {
 		client := &http.Client{
 			Timeout: timeout,
 		}
+
 		url := requestItem[i].URL
 		//	fmt.Printf("Hitting %s\n", url)
 		req, err := http.NewRequest(requestItem[i].Method, url, nil)
@@ -120,8 +121,8 @@ func getRequest(executionItem, vu int) {
 
 		time.Sleep(time.Duration(requestItem[i].ThinkTime) * time.Millisecond)
 	}
-
 }
+
 func debugReq(resp *http.Response, req *http.Request) {
 	// Debug: Print the request details
 	requestDump, err := httputil.DumpRequestOut(req, true)
