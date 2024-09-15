@@ -68,7 +68,7 @@ func concurrentHoldForRamp(wgExecutor *sync.WaitGroup, executionItem int) {
 func concurrentVuRamp(wgRu *sync.WaitGroup, vu, executionItem int) {
 	start := time.Now()
 	for {
-		getRequest(executionItem, vu)
+		forRequest(executionItem, vu)
 		time.Sleep(100 * time.Millisecond)
 		if time.Since(start) >= time.Duration(1)*time.Second {
 			break
@@ -82,7 +82,7 @@ func concurrentVu(wgHu *sync.WaitGroup, executionItem int) {
 	vu := Config.Execution[executionItem].Concurrency
 	//fmt.Println("This is the concurrnecy executing!")
 	for i := 0; i < vu; i++ {
-		getRequest(executionItem, vu)
+		forRequest(executionItem, vu)
 		time.Sleep(100 * time.Millisecond)
 	}
 	wgHu.Done()
