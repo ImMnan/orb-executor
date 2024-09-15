@@ -71,7 +71,7 @@ func getRequestCmd(url string) {
 	debugReq(resp, req)
 }
 
-func Request(executionItem, vu int) {
+func forRequest(executionItem, vu int) {
 	scenarioName := Config.Execution[executionItem].Scenario
 	//fmt.Println("Scenario: ", scenarioName)
 	for i := 0; i < len(Config.Scenarios[scenarioName].Requests); i++ {
