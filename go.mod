@@ -1,4 +1,4 @@
-module github.com/immnan/orca
+module github.com/immnan/orb-executor
 
 go 1.22.1
 

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/immnan/orca/cmd/run"
+	"github.com/immnan/orb-executor/cmd/run"
 	"github.com/spf13/cobra"
 )
 
@@ -21,8 +21,8 @@ var rootCmd = &cobra.Command{
 		version, _ := cmd.Flags().GetBool("version")
 		license, _ := cmd.Flags().GetBool("license")
 		if version {
-			fmt.println("Version: Not-Defined")
-			fmt.println("Author:  https://github.com/ImMnan/")
+			fmt.Println("Version: Not-Defined")
+			fmt.Println("Author:  https://github.com/ImMnan/")
 			fmt.Println(`
 Orb-executor Copyright (C) 2024 Manan Patel
 This program comes with ABSOLUTELY NO WARRANTY; 
@@ -30,7 +30,7 @@ This is free software, and you are welcome to redistribute it
 under certain conditions; type "bmgo --license" for details.
 	`)
 		} else if license {
-			fmt.Println(`Orca - A distributed Automation testing executor
+			fmt.Println(`Orb - A distributed Automation testing executor
 			Copyright (C) 2024  Manan Patel
 
 This program is free software: you can redistribute it and/or modify
