@@ -13,7 +13,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "orca",
+	Use:   "orb",
 	Short: "A Distributed Automation testing application",
 	Long:  ``,
 	// Uncomment the following line if your bare application
@@ -21,10 +21,10 @@ var rootCmd = &cobra.Command{
 		version, _ := cmd.Flags().GetBool("version")
 		license, _ := cmd.Flags().GetBool("license")
 		if version {
-			fmt.Println("Version: Not-Defined")
-			fmt.Println("Author:  https://github.com/ImMnan/")
+			fmt.println("Version: Not-Defined")
+			fmt.println("Author:  https://github.com/ImMnan/")
 			fmt.Println(`
-Orca  Copyright (C) 2024 Manan Patel
+Orb-executor Copyright (C) 2024 Manan Patel
 This program comes with ABSOLUTELY NO WARRANTY; 
 This is free software, and you are welcome to redistribute it
 under certain conditions; type "bmgo --license" for details.
@@ -74,7 +74,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.Flags().BoolP("version", "v", false, "Version of the installed bmgo!")
+	rootCmd.Flags().BoolP("version", "v", false, "Version of the installed orb!")
 	rootCmd.Flags().BoolP("license", "l", false, "Show license details")
 	addSubCommand()
 }
